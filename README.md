@@ -304,9 +304,3 @@ By combining Flask, Docker, Docker Compose, Prometheus, Grafana, and a custom Py
 ---
 
 **Project Name:** SentinelOps — Self-Healing Deployment Platform
-
-**Developed by:** [Your Name]
-
-**Course:** [Your Course Name]
-
-**Institution:** [Your Institution Name]
