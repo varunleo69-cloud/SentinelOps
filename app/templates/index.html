@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentinelOps | Operations Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/">
+        <span class="brand-mark">S</span>
+        <span>sentinel<span class="brand-light">ops</span><small>DEPLOYMENT PLATFORM</small></span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="navigation">
+        <a class="nav-link active" href="#overview"><span class="nav-icon">▦</span> Overview</a>
+        <a class="nav-link" href="#services"><span class="nav-icon">◈</span> Services</a>
+        <a class="nav-link" href="#monitoring"><span class="nav-icon">⌁</span> Monitoring</a>
+        <a class="nav-link" href="#recovery"><span class="nav-icon">⟳</span> Recovery controls</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-status"><span class="pulse-dot"></span><span>Monitoring active</span></div>
+        <div class="sidebar-caption">SELF-HEALING SYSTEM<br><strong>SentinelOps MVP</strong></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb">Workspace <span>/</span> <strong>Overview</strong></div>
+        <div class="topbar-right"><span class="environment"><i></i> LOCAL ENVIRONMENT</span><span class="avatar">SO</span></div>
+      </header>
+
+      <section class="page-heading" id="overview">
+        <div>
+          <div class="eyebrow">OPERATIONS CENTER <span class="eyebrow-line"></span></div>
+          <h1>System overview</h1>
+          <p class="subtitle">Monitor your deployment, inspect services, and manage automated recovery.</p>
+        </div>
+        <div class="last-updated"><span class="live-dot"></span> LIVE SYSTEM CHECKS <small id="last-updated">Updating…</small></div>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-top"><span>APPLICATION STATUS</span><span class="metric-symbol green">◉</span></div>
+          <div class="metric-value status-value" id="app-status">Checking</div>
+          <div class="metric-foot"><span class="status-indicator" id="status-indicator"></span><span id="status-detail">Contacting application</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>APPLICATION UPTIME</span><span class="metric-symbol blue">◷</span></div>
+          <div class="metric-value" id="uptime">—</div>
+          <div class="metric-foot">Since current container start</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>TOTAL HTTP REQUESTS</span><span class="metric-symbol purple">⌁</span></div>
+          <div class="metric-value" id="requests">—</div>
+          <div class="metric-foot">Requests recorded by Flask</div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>RECOVERY MONITOR</span><span class="metric-symbol orange">⟳</span></div>
+          <div class="metric-value compact-value">Enabled</div>
+          <div class="metric-foot"><span class="status-indicator"></span> Docker-based health recovery</div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="panel services-panel" id="services">
+          <div class="panel-heading"><div><div class="eyebrow">INFRASTRUCTURE</div><h2>Service health</h2></div><span class="panel-tag">DOCKER COMPOSE</span></div>
+          <div class="service-list">
+            <div class="service-row"><div class="service-icon flask-icon">F</div><div class="service-info"><strong>Flask Application</strong><small>Web app · Port 5000</small></div><span class="service-state" id="flask-state"><i></i> Checking</span></div>
+            <div class="service-row"><div class="service-icon prometheus-icon">P</div><div class="service-info"><strong>Prometheus</strong><small>Metrics collection · Port 9090</small></div><a class="service-link" href="http://localhost:9090/targets" target="_blank" rel="noopener">Open targets ↗</a></div>
+            <div class="service-row"><div class="service-icon grafana-icon">G</div><div class="service-info"><strong>Grafana</strong><small>Visualization · Port 3000</small></div><a class="service-link" href="http://localhost:3000" target="_blank" rel="noopener">Open dashboard ↗</a></div>
+            <div class="service-row"><div class="service-icon recovery-icon">↻</div><div class="service-info"><strong>Recovery Monitor</strong><small>Health checks · 10 second interval</small></div><span class="service-state managed"><i></i> Managed</span></div>
+          </div>
+          <p class="panel-note">Prometheus and Grafana links open the services running on your local machine.</p>
+        </article>
+
+        <article class="panel monitoring-panel" id="monitoring">
+          <div class="panel-heading"><div><div class="eyebrow">OBSERVABILITY</div><h2>Monitoring snapshot</h2></div><span class="live-label"><i></i> LIVE</span></div>
+          <div class="chart-wrap">
+            <div class="chart-title"><span>Application uptime</span><strong id="chart-uptime">Waiting for metrics</strong></div>
+            <div class="chart-placeholder"><div class="chart-grid"></div><svg viewBox="0 0 520 150" preserveAspectRatio="none" aria-label="Decorative uptime trend"><path class="chart-area" d="M0 118 C45 112 55 90 100 96 S165 72 205 82 S270 50 310 63 S370 34 410 45 S475 20 520 25 L520 150 L0 150 Z"></path><path class="chart-line" d="M0 118 C45 112 55 90 100 96 S165 72 205 82 S270 50 310 63 S370 34 410 45 S475 20 520 25"></path></svg></div>
+            <div class="chart-axis"><span>START</span><span>LIVE METRIC</span></div>
+          </div>
+          <div class="monitoring-footer"><span><b class="legend-dot"></b> Application uptime</span><a href="http://localhost:3000" target="_blank" rel="noopener">View in Grafana ↗</a></div>
+        </article>
+      </section>
+
+      <section class="panel recovery-panel" id="recovery">
+        <div class="panel-heading"><div><div class="eyebrow">FAULT SIMULATION</div><h2>Recovery controls</h2><p class="panel-description">Trigger test scenarios to demonstrate SentinelOps recovery behavior.</p></div><span class="panel-tag">MANUAL TESTING</span></div>
+        <div class="action-grid">
+          <div class="action-card"><div class="action-icon warning-icon">!</div><div class="action-copy"><strong>Simulate unhealthy state</strong><p>Make the health endpoint return HTTP 503 so the recovery monitor can detect the failure.</p></div><button class="action-button warning-button" id="unhealthy-btn">Simulate unhealthy</button></div>
+          <div class="action-card"><div class="action-icon success-icon">✓</div><div class="action-copy"><strong>Restore application health</strong><p>Return the application health endpoint to its normal healthy state.</p></div><button class="action-button success-button" id="restore-btn">Restore health</button></div>
+          <div class="action-card"><div class="action-icon danger-icon">×</div><div class="action-copy"><strong>Simulate process crash</strong><p>Terminate the Flask process to test Docker's configured restart policy.</p></div><button class="action-button danger-button" id="crash-btn">Simulate crash</button></div>
+        </div>
+        <div class="action-feedback" id="action-feedback" role="status">Ready. Choose a test scenario to begin.</div>
+      </section>
+
+      <footer class="footer"><span>© 2026 SentinelOps · Self-Healing Deployment Platform</span><span>BUILT WITH FLASK · PROMETHEUS · GRAFANA · DOCKER</span></footer>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

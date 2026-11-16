@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    container_name: sentinel-app
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: sentinel-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: sentinel-grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  recovery-monitor:
+    build:
+      context: .
+      dockerfile: monitoring/Dockerfile
+    container_name: sentinel-recovery-monitor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - app
+    restart: unless-stopped
