@@ -1,72 +1,54 @@
 # SentinelOps — Self-Healing Application
 
-## 1. Project Overview
+## Project Overview
 
-SentinelOps is a Docker-based Self-Healing Application designed to demonstrate automated application monitoring, failure detection, and recovery.
+SentinelOps is a Docker-based self-healing application designed to demonstrate application monitoring, health checking, automated recovery, and continuous integration and deployment (CI/CD).
 
-The project uses Docker to containerize the application, Prometheus to collect application metrics, Grafana to visualize monitoring data, and a custom Python recovery monitor to detect application health failures and trigger recovery actions.
+The project uses Flask for the application, Docker for containerization, Prometheus for metrics collection, Grafana for visualization, and a Python recovery monitor to detect and recover from application failures.
 
-It also includes a web-based dashboard that provides system status, monitoring information, and controls to simulate application failures.
+GitHub Actions automates the build and testing process, publishes Docker images to GitHub Container Registry (GHCR), and uses a self-hosted GitHub Actions runner to deploy the latest image to the local environment.
 
-## 2. Project Objectives
+## Objectives
 
-- Containerize a Flask application using Docker.
-- Manage multiple services using Docker Compose.
+- Build and containerize a Flask application.
 - Monitor application health and performance.
-- Collect metrics using Prometheus.
-- Visualize metrics using Grafana.
-- Automatically recover from application process crashes.
-- Implement a custom recovery monitor for application health failures.
-- Automate application build and testing using GitHub Actions.
+- Collect application metrics using Prometheus.
+- Visualize monitoring data using Grafana.
+- Detect application failures through automated health checks.
+- Recover unhealthy application containers automatically.
+- Implement CI/CD using GitHub Actions.
+- Publish Docker images to GitHub Container Registry.
+- Automate local deployment using a self-hosted runner.
 
-## 3. Technologies Used
+## Technologies Used
 
 | Technology | Purpose |
 |---|---|
 | Python | Application and recovery monitor |
-| Flask | Backend web application |
-| HTML, CSS, JavaScript | Dashboard frontend |
-| Docker | Application containerization |
+| Flask | Web application framework |
+| Docker | Containerization |
 | Docker Compose | Multi-container management |
 | Prometheus | Metrics collection |
-| Grafana | Metrics visualization |
-| GitHub Actions | Continuous integration |
+| Grafana | Monitoring dashboards |
+| GitHub Actions | CI/CD automation |
+| GitHub Container Registry | Docker image storage |
+| Self-hosted Runner | Local automated deployment |
+| HTML, CSS, JavaScript | Frontend interface |
 
-## 4. System Architecture
+## System Architecture
 
-The SentinelOps platform consists of four main services:
+The project consists of the following components:
 
-1. **Flask Application:** Runs the web application and exposes health and metrics endpoints.
-2. **Prometheus:** Collects application metrics from the Flask application.
-3. **Grafana:** Visualizes the collected metrics through dashboards.
-4. **Recovery Monitor:** Periodically checks application health and requests a container restart after three consecutive health-check failures.
+1. **Flask Application:** Provides the web interface, health endpoint, metrics endpoint, and failure simulation endpoints.
+2. **Docker:** Runs the application and supporting services in containers.
+3. **Prometheus:** Collects application metrics from the `/metrics` endpoint.
+4. **Grafana:** Displays monitoring information through dashboards.
+5. **Recovery Monitor:** Periodically checks the application's health endpoint and restarts the application container after consecutive failures.
+6. **GitHub Actions:** Builds and tests the Docker image whenever code is pushed to the main branch.
+7. **GitHub Container Registry:** Stores the successfully built Docker images.
+8. **Self-hosted Runner:** Runs the deployment job on the local Ubuntu environment and updates the application container.
 
-Docker restart policies handle application process crashes.
-
-### Architecture Flow
-
-```text
-             GitHub Actions
-                   |
-             Docker Build
-                   |
-              Docker Compose
-                   |
-       +-----------+-----------+
-       |           |           |
-    Flask       Prometheus   Grafana
-    App          Metrics    Dashboard
-       |
-       | /health
-       |
- Recovery Monitor
-       |
-  Docker SDK
-       |
-  Restart Application
-```
-
-## 5. Project Structure
+## Project Structure
 
 ```text
 SentinelOps/
@@ -97,96 +79,177 @@ SentinelOps/
 │
 ├── Dockerfile
 ├── docker-compose.yml
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
-## 6. Key Features
+## Main Features
 
-### Application Monitoring
-- Application health monitoring through a Flask health endpoint.
-- Application uptime tracking.
-- HTTP request counting.
-- Prometheus metrics exposure.
+### 1. Application Health Monitoring
 
-### Automated Recovery
-- Docker restart policy for recovering from application process crashes.
-- Custom Python recovery monitor.
-- Detection of repeated application health-check failures.
-- Automatic container restart request after three consecutive failures.
+The Flask application provides a health endpoint:
 
-### Monitoring Dashboard
-- Dark-themed operations dashboard.
-- Application health status.
-- Application uptime.
-- HTTP request count.
-- Service overview.
-- Recovery simulation controls.
-- Links to Prometheus and Grafana.
+```text
+GET /health
+```
 
-### Continuous Integration
-- GitHub Actions workflow.
-- Automated Docker image build.
-- Application health endpoint testing.
+It returns the current application health status.
 
-## 7. Application Endpoints
+### 2. Prometheus Metrics
 
-| Endpoint | Description |
+The application exposes metrics through:
+
+```text
+GET /metrics
+```
+
+Metrics include:
+
+- `sentinel_http_requests_total`
+- `sentinel_app_uptime_seconds`
+
+Prometheus periodically scrapes these metrics.
+
+### 3. Grafana Dashboard
+
+Grafana provides a visual monitoring interface for application metrics.
+
+The dashboard includes:
+
+- HTTP request count
+- Application uptime
+- Monitoring visualizations
+
+### 4. Automatic Recovery
+
+The Python recovery monitor periodically checks the Flask application's health endpoint.
+
+If the application fails three consecutive health checks, the monitor attempts to restart the application container through the Docker API.
+
+Docker Compose also uses a restart policy to restart containers when their processes exit unexpectedly.
+
+### 5. Failure Simulation
+
+The application provides endpoints to demonstrate failure and recovery:
+
+| Endpoint | Purpose |
 |---|---|
-| `/` | SentinelOps dashboard |
-| `/health` | Checks application health |
-| `/metrics` | Exposes Prometheus metrics |
-| `/simulate-crash` | Simulates application process crash |
-| `/simulate-unhealthy` | Simulates an unhealthy application |
+| `/simulate-crash` | Simulates an application process crash |
+| `/simulate-unhealthy` | Simulates an unhealthy application response |
 | `/restore-health` | Restores application health |
 
-## 8. Installation and Setup
+### 6. Continuous Integration
+
+GitHub Actions automatically:
+
+- Checks out the source code.
+- Builds the Docker image.
+- Starts a test container.
+- Checks application startup.
+- Tests the homepage.
+- Tests the health endpoint.
+- Verifies Prometheus metrics.
+
+### 7. Docker Image Publishing
+
+After successful tests on pushes to the `main` branch, GitHub Actions publishes Docker images to GitHub Container Registry.
+
+Images are published with:
+
+- `latest` tag
+- Git commit SHA tag
+
+Image repository:
+
+```text
+ghcr.io/varunleo69-cloud/sentinelops
+```
+
+### 8. Automated Deployment
+
+A GitHub self-hosted runner installed in the local Ubuntu environment performs deployment after the CI and image-publishing job succeeds.
+
+The deployment process:
+
+1. Checks out the repository.
+2. Pulls the latest Docker image from GHCR.
+3. Updates the existing application container using Docker Compose.
+4. Checks the application health endpoint.
+
+The self-hosted runner must be online and have Docker access for automatic deployment to work.
+
+## CI/CD Workflow
+
+```text
+Developer pushes code to GitHub
+              |
+              v
+       GitHub Actions
+              |
+              v
+       Build Docker Image
+              |
+              v
+         Run Tests
+              |
+              v
+       Publish to GHCR
+              |
+              v
+     Self-hosted Runner
+              |
+              v
+      Pull Latest Image
+              |
+              v
+      Deploy with Docker
+              |
+              v
+       Health Verification
+```
+
+Pull requests run the build and testing job. Automatic publishing and deployment are configured for pushes to the `main` branch.
+
+## Installation and Setup
 
 ### Prerequisites
 
-Make sure the following are installed:
-
-- Docker
+- Ubuntu or WSL Ubuntu
+- Docker Engine
 - Docker Compose
 - Git
+- GitHub account
 
-### Step 1: Clone the Repository
-
-```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-
-### Step 2: Navigate to the Project
+### 1. Clone the Repository
 
 ```bash
+git clone https://github.com/varunleo69-cloud/SentinelOps.git
 cd SentinelOps
 ```
 
-### Step 3: Build and Start the Containers
+### 2. Start the Application
 
 ```bash
-docker compose up --build -d
+docker compose up -d --build
 ```
 
-### Step 4: Verify Running Containers
+### 3. Check Running Containers
 
 ```bash
 docker compose ps
 ```
 
-## 9. Accessing the Services
-
-Once the containers are running, access the services using the following URLs:
+### 4. Access the Services
 
 | Service | URL |
 |---|---|
-| SentinelOps Dashboard | http://localhost:5000 |
+| Flask Application | http://localhost:5000 |
 | Prometheus | http://localhost:9090 |
-| Prometheus Targets | http://localhost:9090/targets |
 | Grafana | http://localhost:3000 |
+| Application Health | http://localhost:5000/health |
+| Application Metrics | http://localhost:5000/metrics |
 
-Use the Grafana credentials configured in `docker-compose.yml`.
-
-## 10. Testing and Demonstration
+## Testing and Recovery
 
 ### Check Application Health
 
@@ -194,113 +257,74 @@ Use the Grafana credentials configured in `docker-compose.yml`.
 curl http://localhost:5000/health
 ```
 
-Expected result:
-
-```json
-{
-  "status": "healthy",
-  "application": "SentinelOps"
-}
-```
-
-### View Application Metrics
+### Check Prometheus Metrics
 
 ```bash
 curl http://localhost:5000/metrics
 ```
 
-### Simulate Application Failure
-
-```bash
-curl http://localhost:5000/simulate-unhealthy
-```
-
-Check the health endpoint:
-
-```bash
-curl -i http://localhost:5000/health
-```
-
-The application should return HTTP 503 while the unhealthy state is active.
-
-### Restore Application Health
-
-```bash
-curl http://localhost:5000/restore-health
-```
-
-### Simulate Application Process Crash
-
-**Warning:** This endpoint intentionally terminates the Flask application process.
-
-```bash
-curl http://localhost:5000/simulate-crash
-```
-
-Docker's restart policy should restart the application container.
-
-Verify recovery:
+### View Container Status
 
 ```bash
 docker compose ps
 ```
 
-### Monitor Recovery Logs
+### View Recovery Monitor Logs
 
 ```bash
-docker compose logs -f recovery-monitor
+docker logs sentinel-recovery-monitor
 ```
 
-The recovery monitor checks application health and requests a restart after three consecutive failures.
+### Simulate an Unhealthy Application
 
-## 11. GitHub Actions
+```bash
+curl http://localhost:5000/simulate-unhealthy
+```
 
-SentinelOps uses GitHub Actions for continuous integration.
+The recovery monitor checks the application periodically and attempts recovery after three consecutive failed health checks.
 
-The workflow performs the following tasks:
+Restore application health using:
 
-1. Checks out the repository.
-2. Builds the Docker image.
-3. Starts a test container.
-4. Tests the application health endpoint.
-5. Cleans up the test container.
+```bash
+curl http://localhost:5000/restore-health
+```
 
-The workflow validates the application build and health check. It does not perform remote deployment.
+### Simulate a Process Crash
 
-## 12. Screenshots
+```bash
+curl http://localhost:5000/simulate-crash
+```
 
-Project screenshots are available in the `screenshots/` directory.
+Docker's restart policy is configured to restart the application after its process exits.
 
-They demonstrate:
+## GitHub Repository
 
-- SentinelOps main dashboard.
-- Grafana monitoring dashboard.
-- Prometheus targets.
-- Running Docker containers.
-- Application crash recovery.
-- Application health recovery.
+Source code:
 
-## 13. Limitations
+https://github.com/varunleo69-cloud/SentinelOps
 
-- The project currently runs in a local Docker environment.
-- The GitHub Actions workflow performs build and testing, not remote deployment.
-- The recovery monitor uses Docker socket access to restart the application container. This is highly privileged and requires additional security controls in production.
-- The dashboard's illustrative uptime trend is not a live Prometheus time-series chart; actual metrics visualization is provided by Grafana.
+Docker image:
 
-## 14. Future Enhancements
+https://github.com/varunleo69-cloud/SentinelOps/pkgs/container/sentinelops
 
-- Cloud deployment.
-- Advanced alerting and notifications.
-- Improved security and access control.
-- More detailed monitoring and analytics.
-- Enhanced automated testing.
+## Limitations
 
-## 15. Conclusion
+- The recovery monitor currently monitors the Flask application.
+- The recovery monitor does not independently monitor Prometheus or Grafana health.
+- Docker restart policies handle container process exits, while the custom recovery monitor handles repeated application health-check failures.
+- Automatic deployment depends on the local self-hosted runner being online.
+- The project demonstrates self-healing for its configured application rather than providing a general-purpose deployment platform.
 
-SentinelOps demonstrates how containerization, monitoring, continuous integration, and automated recovery can work together to improve application reliability.
+## Future Enhancements
 
-By combining Flask, Docker, Docker Compose, Prometheus, Grafana, and a custom Python recovery monitor, the project provides a practical demonstration of DevOps principles and self-healing application behavior.
+- Add monitoring for additional services.
+- Improve recovery logging and alert notifications.
+- Add persistent monitoring data storage.
+- Extend automated testing.
+- Add more detailed recovery analytics.
 
----
+## Conclusion
 
-**Project Name:** SentinelOps — Self-Healing Application
+SentinelOps demonstrates how containerization, monitoring, automated recovery, and CI/CD can work together to improve application reliability.
+
+By combining Docker, Flask, Prometheus, Grafana, Python, GitHub Actions, and GitHub Container Registry, the project provides a practical implementation of a self-healing application with automated local deployment.
