@@ -1,8 +1,8 @@
-# SentinelOps — Self-Healing Deployment Platform
+# SentinelOps — Self-Healing Application
 
 ## 1. Project Overview
 
-SentinelOps is a Docker-based Self-Healing Deployment Platform designed to demonstrate automated application monitoring, failure detection, and recovery.
+SentinelOps is a Docker-based Self-Healing Application designed to demonstrate automated application monitoring, failure detection, and recovery.
 
 The project uses Docker to containerize the application, Prometheus to collect application metrics, Grafana to visualize monitoring data, and a custom Python recovery monitor to detect application health failures and trigger recovery actions.
 
@@ -303,4 +303,4 @@ By combining Flask, Docker, Docker Compose, Prometheus, Grafana, and a custom Py
 
 ---
 
-**Project Name:** SentinelOps — Self-Healing Deployment Platform
+**Project Name:** SentinelOps — Self-Healing Application
