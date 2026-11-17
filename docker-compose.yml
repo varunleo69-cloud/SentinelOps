@@ -1,6 +1,7 @@
 services:
   app:
-    build: .
+    image: ghcr.io/varunleo69-cloud/sentinelops:latest
+    pull_policy: always
     container_name: sentinel-app
     ports:
       - "5000:5000"

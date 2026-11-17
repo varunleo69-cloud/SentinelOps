@@ -79,3 +79,38 @@ jobs:
 
           docker push "$IMAGE:latest"
           docker push "$IMAGE:${GITHUB_SHA}"
+
+  deploy:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Pull latest Docker image
+        run: |
+          docker compose -p sentinelops \
+            --project-directory /mnt/D/Ubuntu/Documents/SentinelOps \
+            -f "$GITHUB_WORKSPACE/docker-compose.yml" pull app
+
+      - name: Deploy application
+        run: |
+          docker compose -p sentinelops \
+            --project-directory /mnt/D/Ubuntu/Documents/SentinelOps \
+            -f "$GITHUB_WORKSPACE/docker-compose.yml" up -d --no-deps app
+
+      - name: Verify deployment health
+        run: |
+          for i in {1..15}; do
+            if curl -fsS http://localhost:5000/health; then
+              echo "Deployment successful"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Deployment health check failed"
+          docker logs sentinel-app
+          exit 1
