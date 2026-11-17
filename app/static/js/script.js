@@ -85,5 +85,15 @@ $("crash-btn").addEventListener("click", () => {
   }
 });
 
+// Workspace navigation active state
+const navLinks = document.querySelectorAll(".nav-link");
+
+navLinks.forEach((link) => {
+  link.addEventListener("click", () => {
+    navLinks.forEach((item) => item.classList.remove("active"));
+    link.classList.add("active");
+  });
+});
+
 refreshDashboard();
 setInterval(refreshDashboard, 5000);
